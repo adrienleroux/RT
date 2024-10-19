@@ -1,5 +1,4 @@
 extends Area2D
-#github test
 
 @onready var team : int = get_parent().team
 @onready var startingPosition : Vector2i = get_parent().startingPosition
@@ -46,14 +45,11 @@ func moveTo(globalPos):
 		Globals.emit_signal("apChange", Globals.currentAp)
 		addToLog(apUsedToMove, globalPos)#add to log
 		showMoveOptionsAndCards()
-		#attempting to count number fo rivals in space 
-		#await get_tree().process_frame
-		#if len(get_overlapping_areas())>0:
-			#print('this should print once when intering.' + str(rivalsInSpace))
-			#print(rivalsInSpace)
-			
+		
 		var tween = create_tween()
 		tween.tween_property(charHolder, 'global_position', global_position, tweenSpeed)
+		rivalsInSpace = 0
+		
 		
 func addToLog(apUsedToMove, globalPos):		
 	
@@ -141,7 +137,8 @@ func _process(_delta: float) -> void:
 		print(len(spaceDictionary[sharingWithX]))
 
 func dealDamageToThisTeam():
-	if Globals.teamSelected == team and Globals.teamHasBeenChosenToTakeDamage == true:
+	#team must be marked
+	if Globals.teamSelected == team and markedToPossiblyTakeDamage == true:
 		print('take damage')
 		takeDamage()
 		
@@ -155,28 +152,31 @@ func takeDamage():
 	
 var areasEntered = 0
 var rivalsInSpace : int	= 0
+var markedToPossiblyTakeDamage = false
 			
 func _on_area_entered(area: Area2D) -> void:
+	
 	if team == Globals.teamSelected:
-		sharingWithX += 1
+		sharingWithX = area.sharingWithX +1
 		stackIndex +=1
 		if area.has_method('shiftOver'):
 			area.shiftOver()
-		resituate()
-		print('sharing with' + str(sharingWithX))
-	
-	if area.has_method('takeDamage')and area.playerNumber != playerNumber and Globals.teamSelected == team:
-		rivalsInSpace += 1
-		print('rivals in space: ' + str(rivalsInSpace))
-		
-		if rivalsInSpace > 1:
-			#print('a choice of who to do damage to needs to be made')
-			Globals.teamHasBeenChosenToTakeDamage = false
-			Globals.emit_signal('dealDamageToThisTeam')
+		if area.playerNumber != playerNumber:
+			rivalsInSpace += 1
+			area.markedToPossiblyTakeDamage = true
+			print(rivalsInSpace)
+		#this only fires once:
+		if stackIndex == sharingWithX:
+			print('sharing with ' + str(sharingWithX) + '. ' + str(rivalsInSpace)+ ' of which are rivals')
+			resituate()
+			if rivalsInSpace > 1:
+				print('a choice of who to do damage to needs to be made')
+				Globals.teamHasBeenChosenToTakeDamage = false
+				Globals.emit_signal('dealDamageToATeam')
 			if rivalsInSpace == 1:
 				area.takeDamage()
 				print('takeDamage')
-			
+				
 			
 func shiftOver():
 	if team != Globals.teamSelected:

@@ -13,6 +13,7 @@ signal showCards (teamMembers)
 
 signal dealDamageToThisTeam
 var teamHasBeenChosenToTakeDamage = false
+signal dealDamageToATeam
 
 signal addAnimal
 var animalSelected : String

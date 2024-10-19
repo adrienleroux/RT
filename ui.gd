@@ -7,19 +7,22 @@ extends Control
 
 func _ready() -> void:
 	Globals.connect("apChange", apChange)
-	Globals.connect('dealDamageToThisTeam', dealDamageToThisTeam)
+	Globals.connect('dealDamageToATeam', dealDamageToATeam)
 	#Globals.connect('moveUndone' ,moveUndone)
 	apChange(Globals.currentAp)
 	adaptColor()
 	
-func dealDamageToThisTeam():
+func dealDamageToATeam():
+	Globals.mode = 'aTeamMustBeChosenToTakeDamage'
 	choiceTeamButton.visible = true
 	Globals.teamHasBeenChosenToTakeDamage = false
+	print('show')
 	
 func _on_choice_team_pressed() -> void:
+	choiceTeamButton.visible = false
 	Globals.teamHasBeenChosenToTakeDamage = true
 	Globals.emit_signal("dealDamageToThisTeam")
-	Globals.teamHasBeenChosenToTakeDamage = false
+	Globals.mode = 'move'
 	print('team chosen')
 	
 	
