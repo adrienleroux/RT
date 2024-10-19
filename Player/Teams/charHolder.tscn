@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://d0elqodo8maka"]
+
+[ext_resource type="Script" path="res://Player/Teams/char_holder.gd" id="1_q5ckf"]
+[ext_resource type="FontFile" uid="uid://cdig6yvafwciy" path="res://Art/Minecraftia-Regular.ttf" id="3_uva6r"]
+
+[node name="CharHolder" type="Node2D"]
+script = ExtResource("1_q5ckf")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -2.0
+offset_top = -13.0
+offset_right = 10.0
+offset_bottom = 15.0
+scale = Vector2(0.5, 0.5)
+theme_override_fonts/font = ExtResource("3_uva6r")
+theme_override_font_sizes/font_size = 0
+text = "1"

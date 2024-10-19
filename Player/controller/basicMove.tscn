@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://b7s0km3layu6x"]
+
+[ext_resource type="Script" path="res://Player/controller/basicMove.gd" id="1_4e5yb"]
+
+[node name="basicMove" type="Node2D"]
+position = Vector2(8, 8)
+script = ExtResource("1_4e5yb")
