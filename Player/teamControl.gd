@@ -49,7 +49,7 @@ func moveTo(globalPos):
 		var tween = create_tween()
 		tween.tween_property(charHolder, 'global_position', global_position, tweenSpeed)
 		rivalsInSpace = 0
-		stackAssigner = 0
+		Globals.stackAssigner = 0
 		
 		
 func addToLog(team, mode, globalPos, apUsedToMove):		
@@ -64,10 +64,11 @@ func addToLog(team, mode, globalPos, apUsedToMove):
 	#triggered by control undo button
 func undo():
 #THIS IS THE AREA OF FOCUS
-	
+	Globals.stackAssigner = 0
 	var actionToUndoTo :int 
 	if actionsOnTurn.has(Globals.actionsTaken) and actionsTakenByThisTeam > 0 and Globals.undoTriggered == true:
 		actionsOnTurn.erase(Globals.actionsTaken)
+		sharingWithX = len(get_overlapping_areas())
 		for i in range(Globals.actionsTaken):
 			if actionsOnTurn.has(i):
 				actionToUndoTo = i
@@ -153,14 +154,14 @@ func takeDamage():
 		else:
 			var lastChild = charHolder.get_child_count()-1
 			print(lastChild)
-			charHolder.get_child(lastChild).queue_free()
+			charHolder.get_child(lastChild).visible = false
 	
 var areasEntered = 0
 var rivalsInSpace : int	= 0
 var markedToPossiblyTakeDamage = false
 			
 func _on_area_entered(area: Area2D) -> void:
-	
+	print('area entered')
 	if team == Globals.teamSelected:
 		sharingWithX = area.sharingWithX +1
 		stackIndex +=1
@@ -193,42 +194,50 @@ func shiftOver():
 
 var leavingBehindXTeams	: int = 0	
 var newStackIndex : float = 0
-var stackAssigner : float = 0
+
 var finalStackAsignment = len(spaceDictionary[sharingWithX])
 
 			
 #triggers on each body exit
 func _on_area_exited(area: Area2D) -> void:
-	print('area exited')
-	if team == Globals.teamSelected:
-		
-		print('stackAssigner ' + str(stackAssigner))
-		area.newStackIndex = stackAssigner 
-		stackAssigner += 1
-		
 	
-		if area.has_method('shiftBack'):
-			area.shiftBack(area)
-		if stackAssigner == len(spaceDictionary[sharingWithX])-1:
+	if team == Globals.teamSelected:
+		sharingWithX = 0
+		stackIndex = 0
+		print('stackAssigner ' + str(Globals.stackAssigner))
+		#if area.has_method('shiftBack'):
+			#area.shiftBack()
+		if Globals.stackAssigner == len(spaceDictionary[sharingWithX])-1:
 			#print('this only triggeres once when exiting and should be the last thing')
 			#stackIndex = 0
-			sharingWithX = 0
-			stackIndex = 0
-			stackAssigner = 0
+			
+			
 			#Globals.teamsLeftBehind = 0
 			#print('final stack asignment:' + str(finalStackAsignment))
 			resituate()
 			return
-			
+	if team != Globals.teamSelected:
+		print('shift back')
+		sharingWithX -= 1
+		stackIndex = Globals.stackAssigner
+		Globals.stackAssigner += 1
+		#resituate()
+		sprite.position = spaceDictionary[sharingWithX][stackIndex]
+		collisionShape.position = spaceDictionary[sharingWithX][stackIndex]
+		var tween = create_tween()
+		tween.tween_property(charHolder, 'global_position', sprite.global_position, .5)
+	
 		#print('team ' + str(team) + ' Left Behind:'  + str(Globals.teamsLeftBehind))
 		
 		#print(str(team)+' body exited'
 
-func shiftBack(area):
+func shiftBack():
+	print('shift back')
 	if team != Globals.teamSelected:
 		sharingWithX -= 1
 		stackIndex = newStackIndex
-		resituate()
+		
+		
 func resituate():
 	sprite.position = spaceDictionary[sharingWithX][stackIndex]
 	collisionShape.position = spaceDictionary[sharingWithX][stackIndex]
