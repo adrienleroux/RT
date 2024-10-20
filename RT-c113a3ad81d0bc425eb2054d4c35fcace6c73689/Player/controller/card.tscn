@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3 uid="uid://c8rct8u6vocmb"]
+
+[ext_resource type="Theme" uid="uid://dtme5ipd2jq6i" path="res://Art/mainTheme.tres" id="1_fcyu2"]
+[ext_resource type="Texture2D" uid="uid://v6pr4qyrwo73" path="res://Art/fronts/21.png" id="2_mubxq"]
+[ext_resource type="Script" path="res://Player/controller/card.gd" id="3_asyou"]
+
+[node name="TextureButton" type="TextureButton"]
+theme = ExtResource("1_fcyu2")
+texture_normal = ExtResource("2_mubxq")
+script = ExtResource("3_asyou")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="pressed" from="." to="." method="_on_pressed"]

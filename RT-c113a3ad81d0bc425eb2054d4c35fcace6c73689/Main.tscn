@@ -1,0 +1,254 @@
+[gd_scene load_steps=17 format=3 uid="uid://cl77j80pxkkiq"]
+
+[ext_resource type="Texture2D" uid="uid://b60gtw4t47ai4" path="res://Art/Grid.png" id="1_1o5wp"]
+[ext_resource type="Script" path="res://Map/mapBackgroundImage.gd" id="2_3l43i"]
+[ext_resource type="Script" path="res://player.gd" id="3_qxsda"]
+[ext_resource type="PackedScene" uid="uid://omb35qems64i" path="res://Player/Teams/team1.tscn" id="4_2jpx3"]
+[ext_resource type="Script" path="res://Map/camera_2d.gd" id="4_i1cwr"]
+[ext_resource type="PackedScene" uid="uid://b7s0km3layu6x" path="res://Player/controller/basicMove.tscn" id="4_msgot"]
+[ext_resource type="Script" path="res://Map/grid.gd" id="4_txddc"]
+[ext_resource type="Script" path="res://Player/team.gd" id="5_cuyx4"]
+[ext_resource type="Script" path="res://ui.gd" id="7_3ykc8"]
+[ext_resource type="PackedScene" uid="uid://d0elqodo8maka" path="res://Player/Teams/charHolder.tscn" id="8_1j0rq"]
+[ext_resource type="PackedScene" uid="uid://coo20bf5gjnxc" path="res://Player/Abilities/deer.tscn" id="8_8m76x"]
+[ext_resource type="Theme" uid="uid://dtme5ipd2jq6i" path="res://Art/mainTheme.tres" id="10_ls71p"]
+[ext_resource type="PackedScene" uid="uid://2g0i518moflf" path="res://Player/Abilities/Jaguar.tscn" id="11_h34u3"]
+[ext_resource type="Script" path="res://Map/card_holder.gd" id="13_vi2mh"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_elbyi"]
+texture = ExtResource("1_1o5wp")
+0:0/size_in_atlas = Vector2i(2, 2)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_ncg4n"]
+tile_size = Vector2i(32, 32)
+sources/1 = SubResource("TileSetAtlasSource_elbyi")
+
+[node name="Node2D" type="Node2D"]
+
+[node name="backgroundImage" type="Sprite2D" parent="."]
+visible = false
+modulate = Color(0.387389, 0.387389, 0.387389, 1)
+script = ExtResource("2_3l43i")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+unique_name_in_owner = true
+tile_set = SubResource("TileSet_ncg4n")
+script = ExtResource("4_txddc")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(90, 8)
+zoom = Vector2(3, 3)
+script = ExtResource("4_i1cwr")
+
+[node name="player1" type="Node2D" parent="."]
+script = ExtResource("3_qxsda")
+color = Color(2.5028e-06, 0.904031, 0.904032, 1)
+playerNumber = 1
+
+[node name="team 1" type="Node2D" parent="player1"]
+script = ExtResource("5_cuyx4")
+team = 1
+startingPosition = Vector2i(1, 1)
+
+[node name="Controller" parent="player1/team 1" instance=ExtResource("4_2jpx3")]
+show_behind_parent = true
+
+[node name="basicMove" parent="player1/team 1/Controller" instance=ExtResource("4_msgot")]
+
+[node name="CharHolder" parent="player1/team 1" instance=ExtResource("8_1j0rq")]
+
+[node name="jaguar" parent="player1/team 1/CharHolder" instance=ExtResource("11_h34u3")]
+
+[node name="team 2" type="Node2D" parent="player1"]
+script = ExtResource("5_cuyx4")
+team = 2
+startingPosition = Vector2i(2, 1)
+
+[node name="Controller" parent="player1/team 2" instance=ExtResource("4_2jpx3")]
+
+[node name="basicMove" parent="player1/team 2/Controller" instance=ExtResource("4_msgot")]
+
+[node name="CharHolder" parent="player1/team 2" instance=ExtResource("8_1j0rq")]
+
+[node name="Deer" parent="player1/team 2/CharHolder" instance=ExtResource("8_8m76x")]
+
+[node name="team 3" type="Node2D" parent="player1"]
+script = ExtResource("5_cuyx4")
+team = 3
+startingPosition = Vector2i(2, 2)
+
+[node name="Controller" parent="player1/team 3" instance=ExtResource("4_2jpx3")]
+
+[node name="basicMove" parent="player1/team 3/Controller" instance=ExtResource("4_msgot")]
+
+[node name="CharHolder" parent="player1/team 3" instance=ExtResource("8_1j0rq")]
+
+[node name="Deer" parent="player1/team 3/CharHolder" instance=ExtResource("8_8m76x")]
+
+[node name="player2" type="Node2D" parent="."]
+script = ExtResource("3_qxsda")
+color = Color(1, 0.294118, 0, 1)
+playerNumber = 2
+
+[node name="team 4" type="Node2D" parent="player2"]
+script = ExtResource("5_cuyx4")
+team = 4
+startingPosition = Vector2i(3, 3)
+
+[node name="Controller" parent="player2/team 4" instance=ExtResource("4_2jpx3")]
+
+[node name="basicMove" parent="player2/team 4/Controller" instance=ExtResource("4_msgot")]
+
+[node name="CharHolder" parent="player2/team 4" instance=ExtResource("8_1j0rq")]
+
+[node name="Deer" parent="player2/team 4/CharHolder" instance=ExtResource("8_8m76x")]
+
+[node name="team 5" type="Node2D" parent="player2"]
+script = ExtResource("5_cuyx4")
+team = 5
+startingPosition = Vector2i(4, 3)
+
+[node name="Controller" parent="player2/team 5" instance=ExtResource("4_2jpx3")]
+
+[node name="basicMove" parent="player2/team 5/Controller" instance=ExtResource("4_msgot")]
+
+[node name="CharHolder" parent="player2/team 5" instance=ExtResource("8_1j0rq")]
+
+[node name="Deer" parent="player2/team 5/CharHolder" instance=ExtResource("8_8m76x")]
+
+[node name="team 6" type="Node2D" parent="player2"]
+script = ExtResource("5_cuyx4")
+team = 6
+startingPosition = Vector2i(4, 4)
+
+[node name="Controller" parent="player2/team 6" instance=ExtResource("4_2jpx3")]
+
+[node name="basicMove" parent="player2/team 6/Controller" instance=ExtResource("4_msgot")]
+
+[node name="CharHolder" parent="player2/team 6" instance=ExtResource("8_1j0rq")]
+
+[node name="Deer" parent="player2/team 6/CharHolder" instance=ExtResource("8_8m76x")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ui" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -0.5
+offset_right = 0.5
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("7_3ykc8")
+metadata/_edit_group_ = true
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/ui"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 65.464
+anchor_right = 65.464
+offset_left = -80.964
+offset_right = -48.964
+offset_bottom = 40.0
+grow_horizontal = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/ui/MarginContainer"]
+layout_mode = 2
+
+[node name="ApLabel" type="Label" parent="CanvasLayer/ui/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("10_ls71p")
+text = "1"
+
+[node name="Button" type="Button" parent="CanvasLayer/ui/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("10_ls71p")
+text = "Undo"
+
+[node name="choiceTeam" type="Button" parent="CanvasLayer/ui/MarginContainer/HBoxContainer"]
+visible = false
+layout_mode = 2
+theme = ExtResource("10_ls71p")
+text = "Deal damage to this team"
+
+[node name="turnLabel" type="Label" parent="CanvasLayer/ui/MarginContainer/HBoxContainer"]
+visible = false
+layout_mode = 2
+theme = ExtResource("10_ls71p")
+text = "1"
+
+[node name="card holder" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(0.5, 0.5)
+size_flags_horizontal = 4
+size_flags_vertical = 8
+script = ExtResource("13_vi2mh")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/card holder"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -501.0
+offset_top = -759.0
+offset_right = 501.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Label" type="Label" parent="CanvasLayer/card holder/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("10_ls71p")
+text = "Test"
+horizontal_alignment = 1
+
+[node name="cardHolderBox" type="HBoxContainer" parent="CanvasLayer/card holder/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[connection signal="area_entered" from="player1/team 1/Controller" to="player1/team 1/Controller" method="_on_area_entered"]
+[connection signal="area_exited" from="player1/team 1/Controller" to="player1/team 1/Controller" method="_on_area_exited"]
+[connection signal="mouse_entered" from="player1/team 1/Controller" to="player1/team 1/Controller" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="player1/team 1/Controller" to="player1/team 1/Controller" method="_on_mouse_exited"]
+[connection signal="area_entered" from="player1/team 2/Controller" to="player1/team 2/Controller" method="_on_area_entered"]
+[connection signal="area_exited" from="player1/team 2/Controller" to="player1/team 2/Controller" method="_on_area_exited"]
+[connection signal="mouse_entered" from="player1/team 2/Controller" to="player1/team 2/Controller" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="player1/team 2/Controller" to="player1/team 2/Controller" method="_on_mouse_exited"]
+[connection signal="area_entered" from="player1/team 3/Controller" to="player1/team 3/Controller" method="_on_area_entered"]
+[connection signal="area_exited" from="player1/team 3/Controller" to="player1/team 3/Controller" method="_on_area_exited"]
+[connection signal="mouse_entered" from="player1/team 3/Controller" to="player1/team 3/Controller" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="player1/team 3/Controller" to="player1/team 3/Controller" method="_on_mouse_exited"]
+[connection signal="area_entered" from="player2/team 4/Controller" to="player2/team 4/Controller" method="_on_area_entered"]
+[connection signal="area_exited" from="player2/team 4/Controller" to="player2/team 4/Controller" method="_on_area_exited"]
+[connection signal="mouse_entered" from="player2/team 4/Controller" to="player2/team 4/Controller" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="player2/team 4/Controller" to="player2/team 4/Controller" method="_on_mouse_exited"]
+[connection signal="area_entered" from="player2/team 5/Controller" to="player2/team 5/Controller" method="_on_area_entered"]
+[connection signal="area_exited" from="player2/team 5/Controller" to="player2/team 5/Controller" method="_on_area_exited"]
+[connection signal="mouse_entered" from="player2/team 5/Controller" to="player2/team 5/Controller" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="player2/team 5/Controller" to="player2/team 5/Controller" method="_on_mouse_exited"]
+[connection signal="area_entered" from="player2/team 6/Controller" to="player2/team 6/Controller" method="_on_area_entered"]
+[connection signal="area_exited" from="player2/team 6/Controller" to="player2/team 6/Controller" method="_on_area_exited"]
+[connection signal="mouse_entered" from="player2/team 6/Controller" to="player2/team 6/Controller" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="player2/team 6/Controller" to="player2/team 6/Controller" method="_on_mouse_exited"]
+[connection signal="mouse_entered" from="CanvasLayer/ui/MarginContainer/HBoxContainer/Button" to="CanvasLayer/ui" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/ui/MarginContainer/HBoxContainer/Button" to="CanvasLayer/ui" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="CanvasLayer/ui/MarginContainer/HBoxContainer/Button" to="CanvasLayer/ui" method="_on_button_pressed"]
+[connection signal="mouse_entered" from="CanvasLayer/ui/MarginContainer/HBoxContainer/choiceTeam" to="CanvasLayer/ui" method="_on_button_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/ui/MarginContainer/HBoxContainer/choiceTeam" to="CanvasLayer/ui" method="_on_button_mouse_exited"]
+[connection signal="pressed" from="CanvasLayer/ui/MarginContainer/HBoxContainer/choiceTeam" to="CanvasLayer/ui" method="_on_choice_team_pressed"]

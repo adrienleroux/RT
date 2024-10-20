@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://omb35qems64i"]
+
+[ext_resource type="Script" path="res://Player/teamControl.gd" id="1_1sou1"]
+[ext_resource type="Texture2D" uid="uid://bj46dxidsrul0" path="res://Art/monochrome_tilemap_transparent_packed.png" id="2_k20mq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yehl8"]
+size = Vector2(16, 16)
+
+[node name="team1" type="Area2D"]
+position = Vector2(8, 8)
+script = ExtResource("1_1sou1")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("2_k20mq")
+region_enabled = true
+region_rect = Rect2(21, 5, 6, 6)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_yehl8")
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]

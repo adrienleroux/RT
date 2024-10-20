@@ -30,20 +30,20 @@ func _ready() -> void:
 	charHolder.global_position = self.global_position
 	#initial log for each team
 	if Globals.currentPlayer == playerNumber:
-		addToLog(0, 'none',global_position, charHolder.get_child(charHolder.get_child_count()-1).name)
+		addToLog(team, 'start', global_position, 0)
 	
 	#triggered by a movement button
 	#sets position of the team
 func moveTo(globalPos):
 	if team == Globals.teamSelected and playerNumber == Globals.currentPlayer and Globals.currentAp > 0:
-		
+		actionsTakenByThisTeam += 1
 		global_position = globalPos
-		
+		Globals.actionsTaken += 1
 		# connects to buttons to hide
 		Globals.emit_signal("hideButtons", team)
 		Globals.currentAp -= apUsedToMove
 		Globals.emit_signal("apChange", Globals.currentAp)
-		addToLog(apUsedToMove,'move', globalPos, charHolder.get_child(charHolder.get_child_count()-1).name)#add to log
+		addToLog(team, 'move', global_position, 1)#add to log
 		showMoveOptionsAndCards()
 		
 		var tween = create_tween()
@@ -51,11 +51,10 @@ func moveTo(globalPos):
 		rivalsInSpace = 0
 		
 		
-func addToLog(apUsedToMove, actionType, globalPos, lastChildName):		
-	actionsTakenByThisTeam += 1
-	Globals.actionsTaken += 1
-	actionsOnTurn[Globals.actionsTaken] = [team, actionType, globalPos, apUsedToMove, lastChildName]
-	print('action taken by this team:' + str(actionsTakenByThisTeam) + '. global action:' + str(Globals.actionsTaken) + str(actionsOnTurn[Globals.actionsTaken]))
+func addToLog(team, mode, globalPos, apUsedToMove):		
+	
+	actionsOnTurn[Globals.actionsTaken] = [team, mode, globalPos, apUsedToMove]
+	print(str(Globals.actionsTaken) + str(actionsOnTurn[Globals.actionsTaken]))
 	
 		
 
@@ -64,30 +63,24 @@ func addToLog(apUsedToMove, actionType, globalPos, lastChildName):
 	#triggered by control undo button
 func undo():
 #THIS IS THE AREA OF FOCUS
-	rivalsInSpace = 0
 	var actionToUndoTo :int 
-	
-	if actionsOnTurn.has(Globals.actionsTaken) and actionsTakenByThisTeam > 1 and Globals.undoTriggered == true:
-
+	if actionsOnTurn.has(Globals.actionsTaken) and actionsTakenByThisTeam > 0 and Globals.undoTriggered == true:
+		
+		
 		actionsOnTurn.erase(Globals.actionsTaken)
 		for i in range(Globals.actionsTaken):
-			if actionsOnTurn.has(Globals.actionsTaken):
-				actionToUndoTo = Globals.actionsTaken
-				print('i is' + str(i))
-		print('action to undo to:' + str(actionToUndoTo))
-		
-				
+			if actionsOnTurn.has(i):
+				actionToUndoTo = i
 		Globals.actionsTaken -= 1
 		actionsTakenByThisTeam -= 1
 		Globals.currentAp += 1
 		Globals.emit_signal("apChange", Globals.currentAp)
-		
 		global_position = actionsOnTurn[actionToUndoTo][2]
-		print('move back')
-		
+		#insert show of cards and controls
 		showMoveOptionsAndCards()
-		
+		#end of insert
 		#print('global actions taken: ' + str(Globals.actionsTaken))
+		print(str(Globals.actionsTaken) + str(actionsOnTurn[Globals.actionsTaken]))
 		Globals.undoTriggered = false
 		
 		var tween = create_tween()
@@ -97,13 +90,11 @@ func turnChange():
 	actionsOnTurn.clear()
 	actionsTakenByThisTeam = 0
 	if playerNumber == Globals.currentPlayer:
-		addToLog(apUsedToMove,'none', global_position, charHolder.get_child(charHolder.get_child_count()-1).name)
+		addToLog(team, 'start', global_position, 0)
 #triggered by clicking self
 #triggers basic move to show move buttons
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and collisionShape.visible == true:
-		if Globals.mode == 'aTeamMustBeChosenToTakeDamage' and markedToPossiblyTakeDamage == false:
-			return
 		Globals.mouseInArea = true
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed == true:
 			Globals.teamSelected = team
@@ -145,26 +136,22 @@ func _process(_delta: float) -> void:
 		#print(newStackIndex)
 	if Input.is_action_just_pressed("down"):
 		print(len(spaceDictionary[sharingWithX]))
-	if Input.is_action_just_pressed('left'):
-		print(Globals.actionsTaken)
 
 func dealDamageToThisTeam():
 	#team must be marked
 	if Globals.teamSelected == team and markedToPossiblyTakeDamage == true:
-		print('take damage')
+		#print('take damage')
 		takeDamage()
 		
 func takeDamage():
-	print(' area take damage ')
-	
-	if charHolder.get_child_count() == 2:
-		addToLog(0, 'take Damage', global_position, charHolder.get_child(charHolder.get_child_count()-1).name)
-		get_parent().visible = false
-		collision_layer = 2
-	else:
-		var lastChild = charHolder.get_child_count()-1
-		print(lastChild)
-		charHolder.get_child(lastChild).queue_free()
+		if charHolder.get_child_count() == 2:
+			get_parent().visible = false
+			collision_layer = 2
+			addToLog(team, 'takeDamage', global_position, 0)
+		else:
+			var lastChild = charHolder.get_child_count()-1
+			print(lastChild)
+			charHolder.get_child(lastChild).queue_free()
 	
 var areasEntered = 0
 var rivalsInSpace : int	= 0
@@ -184,16 +171,14 @@ func _on_area_entered(area: Area2D) -> void:
 		#this only fires once:
 		if stackIndex == sharingWithX:
 			#print('sharing with ' + str(sharingWithX) + '. ' + str(rivalsInSpace)+ ' of which are rivals')
-			
+			resituate()
 			if rivalsInSpace > 1:
 				print('a choice of who to do damage to needs to be made')
 				Globals.teamHasBeenChosenToTakeDamage = false
 				Globals.emit_signal('dealDamageToATeam')
 			if rivalsInSpace == 1:
 				area.takeDamage()
-				#print('takeDamage')
-			await get_tree().process_frame
-			resituate()
+				
 				
 			
 func shiftOver():

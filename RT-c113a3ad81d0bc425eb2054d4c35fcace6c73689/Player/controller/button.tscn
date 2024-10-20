@@ -1,0 +1,89 @@
+[gd_scene load_steps=4 format=3 uid="uid://cvks3mpabfsf2"]
+
+[ext_resource type="Texture2D" uid="uid://0krg8gxvvioc" path="res://Art/Button.png" id="1_mj3od"]
+
+[sub_resource type="GDScript" id="GDScript_ax3jg"]
+script/source = "extends Area2D
+
+@onready var teamSelected = Globals.teamSelected
+@onready var tileMap : TileMapLayer = get_tree().current_scene.get_node(\"%TileMapLayer\")
+
+@onready var sprite = $CollisionShape2D
+var spriteDarkness = -.5
+var buttonParent = get_parent()
+var colisionCounter = 0
+
+
+
+
+func _ready() -> void:
+	Globals.connect('hideButtons', hideButtons)
+	Globals.connect('teamDeselect', deleteControls)
+	Globals.connect('turnChange', deleteControls)
+	input_pickable = true
+	z_index = 0
+
+	
+func deleteControls():
+	queue_free()
+	
+	
+	
+func hideButtons(team): 
+	if team != teamSelected or Globals.currentAp == 1:
+		queue_free()
+	
+
+#emits to team control
+func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
+	if event is InputEventMouseButton:
+		Globals.mouseInArea = true
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed == true:
+			Globals.emit_signal(\"moveTo\", global_position)
+			await get_tree().process_frame
+			Globals.emit_signal('showControls', Globals.currentPlayer, teamSelected, Globals.mode, global_position, Globals.currentAp)
+
+func _on_area_entered(area: Area2D) -> void:
+	if area.has_method('hideColisionBox'):
+		colisionCounter += 1
+		if colisionCounter == 4:
+			queue_free()
+		else:
+			area.hideColisionBox()
+		
+func _on_area_exited(area: Area2D) -> void:
+	if area.has_method('showColisionBox'):
+		area.showColisionBox()
+
+
+func _on_mouse_entered() -> void:
+	Globals.mouseInArea = true
+
+
+func _on_mouse_exited() -> void:
+	Globals.mouseInArea = false
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6j8yd"]
+size = Vector2(30, 30)
+
+[node name="button" type="Area2D" groups=["buttons"]]
+z_index = 2
+collision_layer = 2
+collision_mask = 3
+script = SubResource("GDScript_ax3jg")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.595154, 0.595154, 0.595154, 1)
+texture = ExtResource("1_mj3od")
+region_rect = Rect2(32, 16, 16, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_6j8yd")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="area_exited" from="." to="." method="_on_area_exited"]
+[connection signal="input_event" from="." to="." method="_on_input_event"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

@@ -1,0 +1,5 @@
+res://Main.tscn
+res://Art/mainTheme.tres
+res://Player/teamControl.gd
+res://ui.gd
+res://globals.gd
