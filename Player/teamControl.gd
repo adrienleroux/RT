@@ -49,12 +49,13 @@ func moveTo(globalPos):
 		var tween = create_tween()
 		tween.tween_property(charHolder, 'global_position', global_position, tweenSpeed)
 		rivalsInSpace = 0
+		stackAssigner = 0
 		
 		
 func addToLog(team, mode, globalPos, apUsedToMove):		
 	
 	actionsOnTurn[Globals.actionsTaken] = [team, mode, globalPos, apUsedToMove]
-	print(str(Globals.actionsTaken) + str(actionsOnTurn[Globals.actionsTaken]))
+	print('global actions:' +str(Globals.actionsTaken) + '. team actions:'+ str(actionsTakenByThisTeam) + str(actionsOnTurn[Globals.actionsTaken]))
 	
 		
 
@@ -63,10 +64,9 @@ func addToLog(team, mode, globalPos, apUsedToMove):
 	#triggered by control undo button
 func undo():
 #THIS IS THE AREA OF FOCUS
+	
 	var actionToUndoTo :int 
 	if actionsOnTurn.has(Globals.actionsTaken) and actionsTakenByThisTeam > 0 and Globals.undoTriggered == true:
-		
-		
 		actionsOnTurn.erase(Globals.actionsTaken)
 		for i in range(Globals.actionsTaken):
 			if actionsOnTurn.has(i):
@@ -76,15 +76,17 @@ func undo():
 		Globals.currentAp += 1
 		Globals.emit_signal("apChange", Globals.currentAp)
 		global_position = actionsOnTurn[actionToUndoTo][2]
-		#insert show of cards and controls
 		showMoveOptionsAndCards()
-		#end of insert
-		#print('global actions taken: ' + str(Globals.actionsTaken))
-		print(str(Globals.actionsTaken) + str(actionsOnTurn[Globals.actionsTaken]))
+		print('global actions:' +str(Globals.actionsTaken) + '. team actions:'+ str(actionsTakenByThisTeam) + str(actionsOnTurn[Globals.actionsTaken]))
 		Globals.undoTriggered = false
-		
 		var tween = create_tween()
 		tween.tween_property(charHolder, 'global_position', sprite.global_position, .5)
+		
+	if actionsOnTurn.has(Globals.actionsTaken+1) and actionsTakenByThisTeam == 0:
+		print('revive team:'+str(team))
+		get_parent().visible = true
+		collision_layer = 1
+	
 		
 func turnChange():
 	actionsOnTurn.clear()
@@ -170,7 +172,7 @@ func _on_area_entered(area: Area2D) -> void:
 			#print(rivalsInSpace)
 		#this only fires once:
 		if stackIndex == sharingWithX:
-			#print('sharing with ' + str(sharingWithX) + '. ' + str(rivalsInSpace)+ ' of which are rivals')
+			print('sharing with ' + str(sharingWithX) + '. ' + str(rivalsInSpace)+ ' of which are rivals')
 			resituate()
 			if rivalsInSpace > 1:
 				print('a choice of who to do damage to needs to be made')
@@ -197,11 +199,13 @@ var finalStackAsignment = len(spaceDictionary[sharingWithX])
 			
 #triggers on each body exit
 func _on_area_exited(area: Area2D) -> void:
+	print('area exited')
 	if team == Globals.teamSelected:
-		#print('stackAssigner ' + str(stackAssigner))
+		
+		print('stackAssigner ' + str(stackAssigner))
 		area.newStackIndex = stackAssigner 
 		stackAssigner += 1
-		Globals.teamsLeftBehind +=1
+		
 	
 		if area.has_method('shiftBack'):
 			area.shiftBack(area)
