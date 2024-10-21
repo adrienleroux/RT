@@ -25,7 +25,6 @@ var teamSelected : int
 var actionsTaken : int = 0
 var currentAp : int
 var undoTriggered : bool
-var stackAssigner : int
 
 var teamsLeftBehind : int
 var mouseInArea : bool

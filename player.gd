@@ -7,7 +7,7 @@ var teamSelected : int
 
 
 func _ready() -> void:
-	
+	Globals.connect('undo', undoMove)
 	Globals.connect('turnChange', turnChange)
 	Globals.currentAp = apPerTurn
 	Globals.emit_signal("apChange", apPerTurn)
@@ -18,6 +18,12 @@ func turnChange():
 	Globals.currentAp = apPerTurn
 	Globals.emit_signal("apChange", apPerTurn)
 	
-
+	#Undo triggered by control > button pressed
+func undoMove(playersTurn):
+	if playersTurn == playerNumber:
+		#actionsOnTurn.erase(Globals.actionsTaken)
+		#Globals.emit_signal("undoMove", actionsOnTurn[actionsTaken])
+		#Globals.actionsTaken -= 1
+		pass
 		
 	
