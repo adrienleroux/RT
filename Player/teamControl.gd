@@ -35,9 +35,10 @@ func _ready() -> void:
 	#triggered by a movement button
 	#sets position of the team
 func moveTo(globalPos):
+	Globals.stackAssigner = 0
 	if team == Globals.teamSelected and playerNumber == Globals.currentPlayer and Globals.currentAp > 0:
 		actionsTakenByThisTeam += 1
-		stackAssigner =0
+		Globals.stackAssigner =0
 		global_position = globalPos
 		Globals.actionsTaken += 1
 		# connects to buttons to hide
@@ -64,7 +65,7 @@ func addToLog(team, mode, globalPos, apUsedToMove):
 		
 	#triggered by control undo button
 func undo():
-
+	Globals.stackAssigner = 0
 	var actionToUndoTo :int 
 	if actionsOnTurn.has(Globals.actionsTaken) and actionsTakenByThisTeam > 0 and Globals.undoTriggered == true:
 		Globals.teamSelected = team
@@ -137,6 +138,10 @@ func _process(_delta: float) -> void:
 		#print(newStackIndex)
 	if Input.is_action_just_pressed("down"):
 		print(len(spaceDictionary[sharingWithX]))
+		
+	if Input.is_action_just_pressed('CountRivals'):
+		countNumberOfRivalsInSpace()
+	
 
 func dealDamageToThisTeam(dealer):
 	#team must be marked
@@ -144,52 +149,48 @@ func dealDamageToThisTeam(dealer):
 		#print('take damage')
 		takeDamage(dealer)
 
-		
 
-			
-
-
-	
-var areasEntered = 0
+var finalCallMade = false
 var rivalsInSpace : int	= 0
 var markedToPossiblyTakeDamage = false
+var status = 'alive'
 			
 func _on_area_entered(area: Area2D) -> void:
+	if team != Globals.teamSelected:
+		#print(str(team) +' shifted over')
+		sharingWithX += 1
+		resituate()
 	
 	if team == Globals.teamSelected:
-		sharingWithX = area.sharingWithX +1
-		stackIndex +=1
-		if area.has_method('shiftOver'):
-			area.shiftOver()
+		sharingWithX = len(get_overlapping_areas())
+		stackIndex = sharingWithX
 		if area.playerNumber != playerNumber:
-			rivalsInSpace += 1
 			area.markedToPossiblyTakeDamage = true
-			#print(rivalsInSpace)
-		#this only fires once:
-		if stackIndex == sharingWithX:
-			#print('sharing with ' + str(sharingWithX) + '. ' + str(rivalsInSpace)+ ' of which are rivals')
-			print('this fires once when entering')
-			resituate()
-			if rivalsInSpace > 1:
-				print('a choice of who to do damage to needs to be made')
-				Globals.teamHasBeenChosenToTakeDamage = false
-				Globals.emit_signal('dealDamageToATeam', self)
-				
+		finalCallMade = false
+		call_deferred('finalCount')
+		#print('sharing with ' + str(sharingWithX) + '. ' + str(rivalsInSpace)+ ' of which are rivals')
+func finalCount():
+	if finalCallMade == false:
+		finalCallMade = true
+		print('this fires only once when entering')
+		resituate()
+		#DAMAGE
+		if rivalsInSpace > 1:
+			print('a choice of who to do damage to needs to be made')
+			Globals.teamHasBeenChosenToTakeDamage = false
+			Globals.emit_signal('dealDamageToATeam', self)
 			if rivalsInSpace == 1:
 				print('one team is taking damage')
-				area.takeDamage(self)
-				
-				#sharingWithX = len(get_overlapping_areas())
-				#if sharingWithX == 0:
-					#rivalsInSpace = 0
+
 func takeDamage(dealer):
 		if charHolder.get_child_count() == 2:
 			get_parent().visible = false
 			collision_layer = 2
 			dealer.stackIndex = 0
-			
+			status = 'dead'
+			sharingWithX = 0
+			stackIndex = 0
 			#global_position.x = -100
-			
 			addToLog(team, 'takeDamage', global_position, 0)
 			if dealer.has_method('reduceRivalsInSpace'):
 				dealer.reduceRivalsInSpace()
@@ -215,48 +216,35 @@ func shiftOver():
 
 
 var newStackIndex : float = 0
-var stackAssigner : float = 0
 
-			
-#triggers on each body exit
+
 func _on_area_exited(area: Area2D) -> void:
-	
 	if team == Globals.teamSelected:
-		stackAssigner = 0
-		print('area exited')
-		#print('stackAssigner ' + str(stackAssigner))
-		area.newStackIndex = stackAssigner 
-		stackAssigner += 1
-		
-	
-		if area.has_method('shiftBack'):
-			area.shiftBack()
-		if stackAssigner == len(spaceDictionary[sharingWithX])-1:
-			#print('this only triggeres once when exiting and should be the last thing')
-			#stackIndex = 0
-			
-			#Globals.teamsLeftBehind = 0
-			#print('final stack asignment:' + str(finalStackAsignment))
+		if len(get_overlapping_areas()) == 0:
+			print('this printe once when team exits')
+			stackIndex = 0
+			sharingWithX = 0
 			resituate()
-			return
-			
-		#print('team ' + str(team) + ' Left Behind:'  + str(Globals.teamsLeftBehind))
-		
-		#print(str(team)+' body exited'
-
-func shiftBack():
-	print(str(team)+ ' shifted back')
 	if team != Globals.teamSelected:
+		stackIndex = Globals.stackAssigner 
+		Globals.stackAssigner += 1
 		sharingWithX -= 1
-		stackIndex = newStackIndex
 		resituate()
-		
+
+
+func countNumberOfRivalsInSpace():
+	rivalsInSpace = 0
+	var areas : Array
+	areas = get_overlapping_areas()
+	for i in range(len(get_overlapping_areas())):
+		if areas[i].playerNumber != playerNumber:
+			rivalsInSpace += 1
 func resituate():
+	countNumberOfRivalsInSpace()
 	sprite.position = spaceDictionary[sharingWithX][stackIndex]
 	collisionShape.position = spaceDictionary[sharingWithX][stackIndex]
 	var tween = create_tween()
 	tween.tween_property(charHolder, 'global_position', sprite.global_position, .5)
-
 
 func _on_mouse_entered() -> void:
 	Globals.mouseInArea = true

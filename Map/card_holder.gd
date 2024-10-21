@@ -46,7 +46,7 @@ func showHand():
 func showCardsOnTeam(teamMembers):
 	clearCards()
 	if len(teamMembers) >= 1:
-		label.text = ('Team ' +str(teamMembers[0]) + ' has:')
+		label.text = ('Team '+ str(Globals.teamSelected) + ' '+str(teamMembers[0]) + ' has:')
 		
 	if teamMembers.has('Deer'):
 		var cardInstance = card.instantiate()

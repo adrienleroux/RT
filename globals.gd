@@ -12,6 +12,7 @@ signal teamTween (globalPos)
 signal showCards (teamMembers)
 
 
+
 signal dealDamageToThisTeam(dealer)
 var teamHasBeenChosenToTakeDamage = false
 signal dealDamageToATeam(dealer)
@@ -20,7 +21,7 @@ signal addAnimal
 var animalSelected : String
 var mode = 'move'
 
-
+var stackAssigner : int = 0
 var currentPlayer : int = 1
 var teamSelected : int
 var actionsTaken : int = 0
