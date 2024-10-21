@@ -11,9 +11,10 @@ signal moveUndone
 signal teamTween (globalPos)
 signal showCards (teamMembers)
 
-signal dealDamageToThisTeam
+
+signal dealDamageToThisTeam(dealer)
 var teamHasBeenChosenToTakeDamage = false
-signal dealDamageToATeam
+signal dealDamageToATeam(dealer)
 
 signal addAnimal
 var animalSelected : String

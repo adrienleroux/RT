@@ -4,6 +4,7 @@ extends Control
 @onready var choiceTeamButton = $MarginContainer/HBoxContainer/choiceTeam
 @onready var player1 = $"../../player1"
 @onready var player2 = $"../../player2"
+var damageDealer : Area2D
 
 func _ready() -> void:
 	Globals.connect("apChange", apChange)
@@ -12,16 +13,17 @@ func _ready() -> void:
 	apChange(Globals.currentAp)
 	adaptColor()
 	
-func dealDamageToATeam():
+func dealDamageToATeam(dealer):
 	Globals.mode = 'aTeamMustBeChosenToTakeDamage'
 	choiceTeamButton.visible = true
 	Globals.teamHasBeenChosenToTakeDamage = false
-	print('show')
+	damageDealer = dealer
+	
 	
 func _on_choice_team_pressed() -> void:
 	choiceTeamButton.visible = false
 	Globals.teamHasBeenChosenToTakeDamage = true
-	Globals.emit_signal("dealDamageToThisTeam")
+	Globals.emit_signal("dealDamageToThisTeam", damageDealer)
 	Globals.mode = 'move'
 	print('team chosen')
 	
