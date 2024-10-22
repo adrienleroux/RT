@@ -29,8 +29,8 @@ func addAnimal():
 func hidelabel():
 	label.visible = false
 	
-func showlabel(player, team, mode, global_position, ap):
-	if team == get_parent().team:
+func showlabel(player, teamX, mode, global_position, ap):
+	if teamX == get_parent().team:
 		label.visible = true
 		label.text = str(numberOfTeamMates)
 	else:

@@ -10,12 +10,13 @@ var damageDealer : Area2D
 func _ready() -> void:
 	Globals.connect("apChange", apChange)
 	Globals.connect('dealDamageToATeam', dealDamageToATeam)
+	Globals.connect('hideChoiceButton', hideChoiceButton)
 	#Globals.connect('moveUndone' ,moveUndone)
 	apChange(Globals.currentAp)
 	adaptColor()
 	
 func dealDamageToATeam(dealer):
-	Globals.mode = 'aTeamMustBeChosenToTakeDamage'
+	
 	choiceTeamButton.visible = true
 	Globals.teamHasBeenChosenToTakeDamage = false
 	damageDealer = dealer
@@ -27,7 +28,8 @@ func _on_choice_team_pressed() -> void:
 	Globals.emit_signal("dealDamageToThisTeam", Globals.teamSelected, damageDealer)
 	Globals.mode = 'move'
 	print('team chosen')
-	
+func hideChoiceButton():
+	choiceTeamButton.visible = false
 	
 	
 	

@@ -102,6 +102,8 @@ startingPosition = Vector2i(3, 3)
 
 [node name="CharHolder" parent="player2/team 4" instance=ExtResource("8_1j0rq")]
 
+[node name="jaguar" parent="player2/team 4/CharHolder" instance=ExtResource("11_h34u3")]
+
 [node name="Deer" parent="player2/team 4/CharHolder" instance=ExtResource("8_8m76x")]
 
 [node name="team 5" type="Node2D" parent="player2"]

@@ -13,7 +13,7 @@ signal showCards (teamMembers)
 
 
 
-
+signal hideChoiceButton
 signal dealDamageToThisTeam(taker, dealer)
 var teamHasBeenChosenToTakeDamage = false
 var areasMarkedForDamage : Array = []

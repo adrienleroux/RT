@@ -5,6 +5,7 @@ var buttonTSCN = preload("res://Player/controller/button.tscn")
 @onready var teamNode= get_parent()
 @onready var teamBelongsToPlayer : int = get_parent().get_parent().get_parent().playerNumber
 @onready var teamNumber = $"../..".team
+@onready var charHolder = $"../../CharHolder"
 
 var moveRange : Array = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 
@@ -17,6 +18,7 @@ func _ready() -> void:
 	#propagate_call()
 
 func showControls(player,team, mode, global_position,ap):	
+	#delete old buttons
 	for y in range( get_child_count()):
 			get_child(y).queue_free()
 	if Globals.teamSelected == teamNumber and player == teamBelongsToPlayer:

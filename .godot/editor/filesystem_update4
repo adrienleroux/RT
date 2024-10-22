@@ -4,3 +4,7 @@ res://Player/Teams/team1.tscn
 res://Player/teamControl.gd
 res://ui.gd
 res://globals.gd
+res://Player/Teams/char_holder.gd
+res://Player/controller/basicMove.gd
+res://Player/Abilities/deer.gd
+res://Player/Abilities/Jaguar.tscn

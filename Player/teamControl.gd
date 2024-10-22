@@ -46,7 +46,7 @@ func moveTo(globalPos):
 		Globals.currentAp -= apUsedToMove
 		Globals.emit_signal("apChange", Globals.currentAp)
 		addToLog(team, 'move', global_position, 1)#add to log
-		showMoveOptionsAndCards()
+		showMoveOptionsAndCards(Globals.teamSelected)
 		
 		resituate()
 		
@@ -66,8 +66,12 @@ func addToLog(team, mode, globalPos, apUsedToMove):
 	#triggered by control undo button
 func undo():
 	Globals.stackAssigner = 0
+	if Globals.mode =='aTeamMustBeChosenToTakeDamage':
+		Globals.mode = 'move'
+		Globals.emit_signal('hideChoiceButton')
 	var actionToUndoTo :int 
 	if actionsOnTurn.has(Globals.actionsTaken) and actionsTakenByThisTeam > 0 and Globals.undoTriggered == true:
+		
 		Globals.teamSelected = team
 		rivalsInSpace = 0
 		actionsOnTurn.erase(Globals.actionsTaken)
@@ -80,7 +84,7 @@ func undo():
 		Globals.emit_signal("apChange", Globals.currentAp)
 		global_position = actionsOnTurn[actionToUndoTo][2]
 		#insert show of cards and controls
-		showMoveOptionsAndCards()
+		showMoveOptionsAndCards(Globals.teamSelected)
 		#end of insert
 		#print('global actions taken: ' + str(Globals.actionsTaken))
 		Globals.undoTriggered = false
@@ -102,16 +106,16 @@ func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> voi
 		Globals.mouseInArea = true
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed == true:
 			Globals.teamSelected = team
-			showMoveOptionsAndCards()
+			showMoveOptionsAndCards(Globals.teamSelected)
 			#print('team ' +str(Globals.teamSelected)+ str(team)+' clicked')
 			#Globals.emit_signal("hideButtons", team)
-func showMoveOptionsAndCards():
+func showMoveOptionsAndCards(teamX):
 	var teamMembers : Array = []
 	for x in (charHolder.get_child_count()):
 		teamMembers.append(charHolder.get_child(x).name)
 	teamMembers.remove_at(0)
 	Globals.emit_signal('showCards', teamMembers)
-	Globals.emit_signal("showControls",playerNumber, team, mode, global_position, Globals.currentAp)
+	Globals.emit_signal("showControls",playerNumber, teamX, mode, global_position, Globals.currentAp)
 			
 			
 			
@@ -159,38 +163,48 @@ var newStackIndex : float = 0
 func _on_area_entered(area: Area2D) -> void:
 	#print('an area entered team: '+ str(team))
 	if team != Globals.teamSelected and status == 'alive':
-		#print(str(team) +' shifted over')
+		print(str(team) +' shifted over')
 		sharingWithX += 1
 		resituate()
 	
 	if team == Globals.teamSelected:
+		
+		#mark areas to take damage
+		
+		finalCallMade = false
+		#print('sharing with ' + str(sharingWithX) + '. ' + str(rivalsInSpace)+ ' of which are rivals')
+		call_deferred('finalCount', area)
+		
+func finalCount(area):
+	print('this triggers once when entering')
+
+	if finalCallMade == false:
+		finalCallMade = true
 		sharingWithX = len(get_overlapping_areas())
 		stackIndex = sharingWithX
-		#mark areas to take damage
+		resituate()
+	
 		if area.playerNumber != playerNumber:
 			area.markedToPossiblyTakeDamage = true
 			Globals.areasMarkedForDamage.append(area.team)
-		finalCallMade = false
-		call_deferred('finalCount')
-		#print('sharing with ' + str(sharingWithX) + '. ' + str(rivalsInSpace)+ ' of which are rivals')
-func finalCount():
-	if finalCallMade == false:
-		finalCallMade = true
-		print('this fires only once when entering')
-		resituate()
-		#DAMAGE
-		print(Globals.areasMarkedForDamage)
-		if rivalsInSpace > 1:
-			print('a choice of who to do damage to needs to be made')
-			Globals.teamHasBeenChosenToTakeDamage = false
-			Globals.emit_signal('dealDamageToATeam', self)
-			Globals.teamSelected = Globals.areasMarkedForDamage[0]
-			Globals.emit_signal("showControls", Globals.areasMarkedForDamage[0], global_position, Globals.currentAp)
+			print(Globals.areasMarkedForDamage)
+
+			#print('this fires only once when entering')
 			
-			
-		if rivalsInSpace == 1:
-			#print('one team is taking damage')
-			Globals.emit_signal("dealDamageToThisTeam", Globals.areasMarkedForDamage[0], self)
+			#DAMAGE
+			if rivalsInSpace > 1:
+				print('a choice of who to do damage to needs to be made')
+				Globals.mode = 'aTeamMustBeChosenToTakeDamage'
+				Globals.teamHasBeenChosenToTakeDamage = false
+				Globals.emit_signal('dealDamageToATeam', self)
+				Globals.teamSelected = Globals.areasMarkedForDamage[0]
+				showMoveOptionsAndCards(Globals.teamSelected)
+				
+				
+			if rivalsInSpace == 1:
+				print(str(Globals.areasMarkedForDamage)+ '# team is taking damage')
+				Globals.emit_signal("dealDamageToThisTeam", Globals.areasMarkedForDamage[0], self)
+			Globals.areasMarkedForDamage.clear()
 			
 func dealDamageToThisTeam(taker, dealer):
 	if team == taker and status == 'alive':
@@ -199,6 +213,7 @@ func dealDamageToThisTeam(taker, dealer):
 		
 func takeDamage(dealer):
 		if charHolder.get_child_count() == 2:
+			print('remove team')
 			get_parent().visible = false
 			collision_layer = 2
 			collision_mask = 2
@@ -207,6 +222,7 @@ func takeDamage(dealer):
 			sharingWithX = 0
 			stackIndex = 0
 			rivalsInSpace = 0
+			
 			Globals.areasMarkedForDamage = []
 			#global_position.x = -100
 			addToLog(team, 'takeDamage', global_position, 0)
@@ -217,10 +233,11 @@ func takeDamage(dealer):
 			var lastChild = charHolder.get_child_count()-1
 			print(lastChild)
 			charHolder.get_child(lastChild).queue_free()			
-			
+		markedToPossiblyTakeDamage = false
+		Globals.mode = 'move'
 
 
-func _on_area_exited(area: Area2D) -> void:
+func _on_area_exited(_area: Area2D) -> void:
 	print('area exited team: '+ str(team))
 	if team == Globals.teamSelected:
 		if len(get_overlapping_areas()) == 0:

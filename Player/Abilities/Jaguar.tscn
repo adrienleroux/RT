@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Player/Abilities/Jaguar.gd" id="1_tqt85"]
 [ext_resource type="Texture2D" uid="uid://bj46dxidsrul0" path="res://Art/monochrome_tilemap_transparent_packed.png" id="2_gwriy"]
 
-[node name="Deer" type="Node2D"]
+[node name="Jaguar" type="Node2D"]
 z_index = 1
 script = ExtResource("1_tqt85")
 
