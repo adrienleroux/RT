@@ -6,6 +6,7 @@ extends Control
 @onready var player2 = $"../../player2"
 var damageDealer : Area2D
 
+
 func _ready() -> void:
 	Globals.connect("apChange", apChange)
 	Globals.connect('dealDamageToATeam', dealDamageToATeam)
@@ -23,7 +24,7 @@ func dealDamageToATeam(dealer):
 func _on_choice_team_pressed() -> void:
 	choiceTeamButton.visible = false
 	Globals.teamHasBeenChosenToTakeDamage = true
-	Globals.emit_signal("dealDamageToThisTeam", damageDealer)
+	Globals.emit_signal("dealDamageToThisTeam", Globals.teamSelected, damageDealer)
 	Globals.mode = 'move'
 	print('team chosen')
 	

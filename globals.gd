@@ -13,8 +13,10 @@ signal showCards (teamMembers)
 
 
 
-signal dealDamageToThisTeam(dealer)
+
+signal dealDamageToThisTeam(taker, dealer)
 var teamHasBeenChosenToTakeDamage = false
+var areasMarkedForDamage : Array = []
 signal dealDamageToATeam(dealer)
 
 signal addAnimal
@@ -27,7 +29,6 @@ var teamSelected : int
 var actionsTaken : int = 0
 var currentAp : int
 var undoTriggered : bool
-
 var teamsLeftBehind : int
 var mouseInArea : bool
 
