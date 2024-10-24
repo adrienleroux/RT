@@ -19,7 +19,7 @@ var teamHasBeenChosenToTakeDamage = false
 var areasMarkedForDamage : Array = []
 var teamTakingDamage : int
 signal dealDamageToATeam(dealer)
-signal teamHasDied
+
 
 signal addAnimal
 var animalSelected : String

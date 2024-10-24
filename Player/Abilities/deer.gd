@@ -19,7 +19,7 @@ func dealDamageToThisTeam(taker, _dealer):
 	if taker == team and charHolder.get_child(-1)== self:
 		for i in range(len(deerRange)):
 			basicMoveRange.erase(deerRange[i])
-		print(basicMoveRange)
+		
 		
 func turnChange():
 	if visible == false:

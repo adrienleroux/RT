@@ -3,4 +3,5 @@ res://Art/mainTheme.tres
 res://Player/Teams/team1.tscn
 res://Player/Abilities/Jaguar.tscn
 res://Player/teamControl.gd
+res://Player/Abilities/deer.gd
 res://globals.gd
